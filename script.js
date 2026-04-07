@@ -874,9 +874,12 @@ function showPDFDocument(pdfPath, pdfTitle) {
 // 隐藏PDF文档函数
 function hidePDFDocument() {
     const pdfDisplayArea = document.getElementById('pdfDisplayArea');
-    const pdfEmbed = document.getElementById('pdfEmbed');
+    const pdfViewer = document.getElementById('pdf-viewer-5');
     
-    pdfEmbed.src = '';
+    // 清空PDF查看器
+    if (pdfViewer) {
+        pdfViewer.innerHTML = '';
+    }
     pdfDisplayArea.style.display = 'none';
 }
 
