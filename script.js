@@ -35,10 +35,11 @@ function showContent(title) {
             <div class="course-intro-container">
                 <h3>${title}</h3>
                 <div class="pdf-container" style="width: 100%; height: 800px; overflow: auto;">
-                        <div class="pdf-controls">
-                            <button onclick="window.open('电力机车制动解除操作实训课程（单人单张）评分表(1).pdf', '_blank')" class="download-btn">查看PDF</button>
-                        </div>
+                    <div class="pdf-controls">
+                        <button onclick="window.open('电力机车制动解除操作实训课程（单人单张）评分表(1).pdf', '_blank')" class="download-btn">查看PDF</button>
                     </div>
+                    <embed src="电力机车制动解除操作实训课程（单人单张）评分表(1).pdf" type="application/pdf" width="100%" height="100%">
+                </div>
             </div>
         `;
         contentArea.innerHTML = contentHTML;
@@ -217,6 +218,7 @@ function showContent(title) {
                         <div class="pdf-controls">
                             <button onclick="window.open('显示界面识读与功能键的使用.pdf', '_blank')" class="download-btn">查看PDF</button>
                         </div>
+                        <embed src="显示界面识读与功能键的使用.pdf" type="application/pdf" width="100%" height="850px">
                     </div>
                 </div>
             </div>
@@ -274,6 +276,7 @@ function showContent(title) {
                         <div class="pdf-controls">
                             <button onclick="window.open('EBV电子制动阀.pdf', '_blank')" class="download-btn">查看PDF</button>
                         </div>
+                        <embed src="EBV电子制动阀.pdf" type="application/pdf" width="100%" height="850px">
                     </div>
                 </div>
             </div>
@@ -351,6 +354,7 @@ function showContent(title) {
                         <div class="pdf-controls">
                             <button onclick="window.open('EBV电子制动阀.pdf', '_blank')" class="download-btn">查看PDF</button>
                         </div>
+                        <embed src="EBV电子制动阀.pdf" type="application/pdf" width="100%" height="850px">
                     </div>
                 </div>
             </div>
@@ -591,6 +595,7 @@ function showContent(title) {
                             <div class="pdf-controls">
                                 <button onclick="window.open('考核大纲.pdf', '_blank')" class="download-btn">查看PDF</button>
                             </div>
+                            <embed src="考核大纲.pdf" type="application/pdf" width="100%" height="100%">
                         </div>
                     </div>
                     
@@ -840,8 +845,12 @@ function showCrewAssessmentOutline() {
                 
                 <!-- PDF显示区域 -->
                 <div id="pdfDisplayArea" style="display: none;">
-                    <div style="text-align: center; padding: 40px;">
-                        <p style="color: var(--primary-color); font-size: 16px;">PDF文档已在新窗口打开</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h5 id="pdfTitle" style="color: var(--primary-color); margin: 0;"></h5>
+                        <button class="close-btn" onclick="hidePDFDocument()">关闭文档</button>
+                    </div>
+                    <div class="pdf-container" style="width: 100%; height: 800px; overflow: auto;">
+                        <embed id="pdfEmbed" src="" type="application/pdf" width="100%" height="100%">
                     </div>
                 </div>
             </div>
@@ -852,13 +861,21 @@ function showCrewAssessmentOutline() {
 
 // 显示PDF文档函数
 function showPDFDocument(pdfPath, pdfTitle) {
-    // 直接在新窗口打开PDF文件
-    window.open(pdfPath, '_blank');
+    const pdfDisplayArea = document.getElementById('pdfDisplayArea');
+    const pdfEmbed = document.getElementById('pdfEmbed');
+    const pdfTitleElement = document.getElementById('pdfTitle');
+    
+    pdfEmbed.src = pdfPath;
+    pdfTitleElement.textContent = pdfTitle;
+    pdfDisplayArea.style.display = 'block';
 }
 
 // 隐藏PDF文档函数
 function hidePDFDocument() {
     const pdfDisplayArea = document.getElementById('pdfDisplayArea');
+    const pdfEmbed = document.getElementById('pdfEmbed');
+    
+    pdfEmbed.src = '';
     pdfDisplayArea.style.display = 'none';
 }
 
@@ -1489,9 +1506,6 @@ function showEmojiAnimation(emoji) {
     }, 2000);
 }
 
-// 使用PDF.js渲染PDF文档
-
-
 // 播放语音提示
 function speak(text) {
     const speech = new SpeechSynthesisUtterance();
@@ -1666,8 +1680,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     observer.observe(contentArea, { childList: true, subtree: true });
 });
-
-
 
 // 播放制动视频
 function playBrakeVideo(videoType) {
