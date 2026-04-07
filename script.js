@@ -35,6 +35,9 @@ function showContent(title) {
             <div class="course-intro-container">
                 <h3>${title}</h3>
                 <div class="pdf-container" style="width: 100%; height: 800px; overflow: auto;">
+                    <div class="pdf-controls">
+                        <button onclick="window.open('电力机车制动解除操作实训课程（单人单张）评分表(1).pdf', '_blank')" class="download-btn">查看PDF</button>
+                    </div>
                     <embed src="电力机车制动解除操作实训课程（单人单张）评分表(1).pdf" type="application/pdf" width="100%" height="100%">
                 </div>
             </div>
@@ -212,6 +215,9 @@ function showContent(title) {
                         <button class="close-btn" onclick="closeLearningMaterials()">关闭</button>
                     </div>
                     <div class="pdf-container">
+                        <div class="pdf-controls">
+                            <button onclick="window.open('显示界面识读与功能键的使用.pdf', '_blank')" class="download-btn">查看PDF</button>
+                        </div>
                         <embed src="显示界面识读与功能键的使用.pdf" type="application/pdf" width="100%" height="850px">
                     </div>
                 </div>
@@ -267,6 +273,9 @@ function showContent(title) {
                         <button class="close-btn" onclick="closeLearningMaterials()">关闭</button>
                     </div>
                     <div class="pdf-container">
+                        <div class="pdf-controls">
+                            <button onclick="window.open('EBV电子制动阀.pdf', '_blank')" class="download-btn">查看PDF</button>
+                        </div>
                         <embed src="EBV电子制动阀.pdf" type="application/pdf" width="100%" height="850px">
                     </div>
                 </div>
@@ -342,6 +351,9 @@ function showContent(title) {
                         <button class="close-btn" onclick="closeLearningMaterials()">关闭</button>
                     </div>
                     <div class="pdf-container">
+                        <div class="pdf-controls">
+                            <button onclick="window.open('EBV电子制动阀.pdf', '_blank')" class="download-btn">查看PDF</button>
+                        </div>
                         <embed src="EBV电子制动阀.pdf" type="application/pdf" width="100%" height="850px">
                     </div>
                 </div>
@@ -580,6 +592,9 @@ function showContent(title) {
                     <div style="flex: 1; background-color: rgba(255, 255, 255, 0.9); padding: 30px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);">
                         <h4 style="color: var(--primary-color); margin-bottom: 20px; text-align: center;">岗课赛证考点</h4>
                         <div class="pdf-container" style="width: 100%; height: 800px; overflow: auto;">
+                            <div class="pdf-controls">
+                                <button onclick="window.open('考核大纲.pdf', '_blank')" class="download-btn">查看PDF</button>
+                            </div>
                             <embed src="考核大纲.pdf" type="application/pdf" width="100%" height="100%">
                         </div>
                     </div>
