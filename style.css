@@ -75,6 +75,32 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
+/* PDF.js样式 */
+.pdf-page {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.pdf-page canvas {
+    max-width: 100%;
+    height: auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.loading-message {
+    text-align: center;
+    padding: 20px;
+    color: var(--primary-color);
+    font-size: 16px;
+}
+
+.error-message {
+    text-align: center;
+    padding: 20px;
+    color: var(--secondary-color);
+    font-size: 16px;
+}
+
 /* 顶部导航栏样式 */
 .top-nav {
     display: flex;

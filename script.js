@@ -35,11 +35,11 @@ function showContent(title) {
             <div class="course-intro-container">
                 <h3>${title}</h3>
                 <div class="pdf-container" style="width: 100%; height: 800px; overflow: auto;">
-                    <div class="pdf-controls">
-                        <button onclick="window.open('电力机车制动解除操作实训课程（单人单张）评分表(1).pdf', '_blank')" class="download-btn">查看PDF</button>
+                        <div class="pdf-controls">
+                            <button onclick="window.open('电力机车制动解除操作实训课程（单人单张）评分表(1).pdf', '_blank')" class="download-btn">查看PDF</button>
+                        </div>
+                        <div id="pdf-viewer-1"></div>
                     </div>
-                    <embed src="电力机车制动解除操作实训课程（单人单张）评分表(1).pdf" type="application/pdf" width="100%" height="100%">
-                </div>
             </div>
         `;
         contentArea.innerHTML = contentHTML;
@@ -218,7 +218,7 @@ function showContent(title) {
                         <div class="pdf-controls">
                             <button onclick="window.open('显示界面识读与功能键的使用.pdf', '_blank')" class="download-btn">查看PDF</button>
                         </div>
-                        <embed src="显示界面识读与功能键的使用.pdf" type="application/pdf" width="100%" height="850px">
+                        <div id="pdf-viewer-2"></div>
                     </div>
                 </div>
             </div>
@@ -276,7 +276,7 @@ function showContent(title) {
                         <div class="pdf-controls">
                             <button onclick="window.open('EBV电子制动阀.pdf', '_blank')" class="download-btn">查看PDF</button>
                         </div>
-                        <embed src="EBV电子制动阀.pdf" type="application/pdf" width="100%" height="850px">
+                        <div id="pdf-viewer-3"></div>
                     </div>
                 </div>
             </div>
@@ -354,7 +354,7 @@ function showContent(title) {
                         <div class="pdf-controls">
                             <button onclick="window.open('EBV电子制动阀.pdf', '_blank')" class="download-btn">查看PDF</button>
                         </div>
-                        <embed src="EBV电子制动阀.pdf" type="application/pdf" width="100%" height="850px">
+                        <div id="pdf-viewer-3"></div>
                     </div>
                 </div>
             </div>
@@ -595,7 +595,7 @@ function showContent(title) {
                             <div class="pdf-controls">
                                 <button onclick="window.open('考核大纲.pdf', '_blank')" class="download-btn">查看PDF</button>
                             </div>
-                            <embed src="考核大纲.pdf" type="application/pdf" width="100%" height="100%">
+                            <div id="pdf-viewer-4"></div>
                         </div>
                     </div>
                     
@@ -850,7 +850,7 @@ function showCrewAssessmentOutline() {
                         <button class="close-btn" onclick="hidePDFDocument()">关闭文档</button>
                     </div>
                     <div class="pdf-container" style="width: 100%; height: 800px; overflow: auto;">
-                        <embed id="pdfEmbed" src="" type="application/pdf" width="100%" height="100%">
+                        <div id="pdf-viewer-5"></div>
                     </div>
                 </div>
             </div>
@@ -862,12 +862,13 @@ function showCrewAssessmentOutline() {
 // 显示PDF文档函数
 function showPDFDocument(pdfPath, pdfTitle) {
     const pdfDisplayArea = document.getElementById('pdfDisplayArea');
-    const pdfEmbed = document.getElementById('pdfEmbed');
     const pdfTitleElement = document.getElementById('pdfTitle');
     
-    pdfEmbed.src = pdfPath;
     pdfTitleElement.textContent = pdfTitle;
     pdfDisplayArea.style.display = 'block';
+    
+    // 使用PDF.js渲染PDF
+    renderPDFWithPDFJS(pdfPath, 'pdf-viewer-5');
 }
 
 // 隐藏PDF文档函数
@@ -1506,6 +1507,50 @@ function showEmojiAnimation(emoji) {
     }, 2000);
 }
 
+// 使用PDF.js渲染PDF文档
+function renderPDFWithPDFJS(pdfPath, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    // 清空容器
+    container.innerHTML = '<div class="loading-message">正在加载PDF文档...</div>';
+    
+    // 设置PDF.js工作器
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+    
+    // 获取PDF文档
+    pdfjsLib.getDocument(pdfPath).promise.then(pdf => {
+        container.innerHTML = '';
+        
+        // 渲染每一页
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const pageContainer = document.createElement('div');
+            pageContainer.className = 'pdf-page';
+            
+            const canvas = document.createElement('canvas');
+            pageContainer.appendChild(canvas);
+            container.appendChild(pageContainer);
+            
+            // 渲染页面
+            pdf.getPage(i).then(page => {
+                const viewport = page.getViewport({ scale: 1.5 });
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                
+                const renderContext = {
+                    canvasContext: canvas.getContext('2d'),
+                    viewport: viewport
+                };
+                
+                page.render(renderContext);
+            });
+        }
+    }).catch(error => {
+        container.innerHTML = '<div class="error-message">PDF加载失败，请点击"查看PDF"按钮查看</div>';
+        console.error('PDF加载失败:', error);
+    });
+}
+
 // 播放语音提示
 function speak(text) {
     const speech = new SpeechSynthesisUtterance();
@@ -1674,12 +1719,35 @@ document.addEventListener('DOMContentLoaded', function() {
                         initDragAndDrop();
                     }, 100);
                 }
+                // 检查是否包含PDF查看器
+                if (contentArea.querySelector('[id^="pdf-viewer-"]')) {
+                    setTimeout(() => {
+                        renderPDFsWhenReady();
+                    }, 100);
+                }
             }
         });
     });
     
     observer.observe(contentArea, { childList: true, subtree: true });
 });
+
+// 当内容显示完成后渲染PDF
+function renderPDFsWhenReady() {
+    // 检查并渲染各个PDF查看器
+    if (document.getElementById('pdf-viewer-1')) {
+        renderPDFWithPDFJS('电力机车制动解除操作实训课程（单人单张）评分表(1).pdf', 'pdf-viewer-1');
+    }
+    if (document.getElementById('pdf-viewer-2')) {
+        renderPDFWithPDFJS('显示界面识读与功能键的使用.pdf', 'pdf-viewer-2');
+    }
+    if (document.getElementById('pdf-viewer-3')) {
+        renderPDFWithPDFJS('EBV电子制动阀.pdf', 'pdf-viewer-3');
+    }
+    if (document.getElementById('pdf-viewer-4')) {
+        renderPDFWithPDFJS('考核大纲.pdf', 'pdf-viewer-4');
+    }
+}
 
 // 播放制动视频
 function playBrakeVideo(videoType) {
