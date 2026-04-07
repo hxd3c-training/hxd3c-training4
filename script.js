@@ -1764,11 +1764,11 @@ function handleScreenRotation() {
         // 竖屏状态：旋转容器90度并缩小显示
         container.style.transform = 'rotate(90deg) scale(0.8)';
         container.style.transformOrigin = 'center center';
-        container.style.width = (window.innerHeight * 1.4) + 'px';
+        container.style.width = (window.innerHeight * 1.2) + 'px';
         container.style.height = 'auto';
         container.style.position = 'fixed';
-        container.style.top = '60%';
-        container.style.left = '3%';
+        container.style.top = '50%';
+        container.style.left = '50%';
         container.style.marginTop = '-' + (container.offsetHeight / 2) + 'px';
         container.style.marginLeft = '-' + (container.offsetWidth / 2) + 'px';
         container.style.overflow = 'auto';
@@ -1778,7 +1778,7 @@ function handleScreenRotation() {
         
         // 设置body样式
         document.body.style.overflow = 'auto';
-        document.body.style.width = (window.innerHeight * 1.4) + 'px';
+        document.body.style.width = (window.innerHeight * 1.2) + 'px';
         document.body.style.height = 'auto';
         document.body.style.minHeight = window.innerWidth + 'px';
         document.body.style.maxHeight = 'none';
