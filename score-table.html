@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实作评分表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-color: #f5f5f5;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+        
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .info-group {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-item label {
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .info-item input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .info-item select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: white;
+        }
+        
+        .history-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+        }
+        
+        .history-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .history-search {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 200px;
+        }
+        
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .history-table th,
+        .history-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .history-table th {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .history-table tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .history-table .btn-view {
+            padding: 6px 12px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .history-table .btn-view:hover {
+            background-color: #0b7dda;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        
+        .modal-close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+        }
+        
+        .modal-close:hover,
+        .modal-close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .modal-info {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+        }
+        
+        .modal-info-item {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .modal-info-item strong {
+            color: #555;
+        }
+        
+        .score-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .score-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #fafafa;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+        
+        .score-item:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .score-content {
+            flex: 1;
+            padding-right: 20px;
+        }
+        
+        .score-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .score-desc {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .score-input {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .score-slider {
+            width: 200px;
+            height: 6px;
+            background: #ddd;
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .score-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #4CAF50;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .score-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #4CAF50;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .score-value {
+            min-width: 40px;
+            text-align: center;
+            font-weight: bold;
+            color: #4CAF50;
+            font-size: 18px;
+        }
+        
+        .score-max {
+            color: #999;
+            font-size: 14px;
+        }
+        
+        .comments-section {
+            margin-bottom: 30px;
+        }
+        
+        .comments-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            resize: vertical;
+            font-family: inherit;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .total-section {
+            background-color: #e8f5e9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .total-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .total-label {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        
+        .total-score {
+            font-size: 36px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #45a049;
+        }
+        
+        .btn-secondary {
+            background-color: #2196F3;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #0b7dda;
+        }
+        
+        .btn-danger {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #da190b;
+        }
+        
+        @media (max-width: 768px) {
+            .header-info {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .info-group {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .score-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .score-input {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .score-slider {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>HXD3C型电力机车制动异常处置与安全行车实作评分表</h1>
+        
+        <!-- 头部信息 -->
+        <div class="header-info">
+            <div class="info-group">
+                <div class="info-item">
+                    <label>姓名：</label>
+                    <input type="text" id="studentName" placeholder="请输入学员姓名">
+                </div>
+                <div class="info-item">
+                    <label>学号：</label>
+                    <input type="text" id="studentId" placeholder="请输入学号">
+                </div>
+                <div class="info-item">
+                    <label>评价类型：</label>
+                    <select id="scoreType">
+                        <option value="teacher">教师评价</option>
+                        <option value="self">自评</option>
+                        <option value="peer">互评</option>
+                    </select>
+                </div>
+            </div>
+            <div class="info-group">
+                <div class="info-item">
+                    <label>日期：</label>
+                    <input type="date" id="scoreDate">
+                </div>
+                <div class="info-item">
+                    <label>评分人：</label>
+                    <input type="text" id="scorerName" placeholder="请输入评分人姓名">
+                </div>
+            </div>
+        </div>
+        
+        <!-- 评分项目 -->
+        <div class="score-section">
+            <div class="section-title">评分项目</div>
+            
+            <!-- 项目1 -->
+            <div class="score-item">
+                <div class="score-content">
+                    <div class="score-title">1. LKJ2000显示界面认知</div>
+                    <div class="score-desc">能够准确识别LKJ2000显示屏上的各项信息，包括速度、限制速度、距离等关键参数</div>
+                </div>
+                <div class="score-input">
+                    <input type="range" class="score-slider" min="0" max="10" value="0" step="0.5" data-score="item1">
+                    <span class="score-value" id="score1">0</span>
+                    <span class="score-max">/10</span>
+                </div>
+            </div>
+            
+            <!-- 项目2 -->
+            <div class="score-item">
+                <div class="score-content">
+                    <div class="score-title">2. EBV电子制动阀操作</div>
+                    <div class="score-desc">能够正确操作EBV电子制动阀，包括常用制动、缓解、紧急制动等功能</div>
+                </div>
+                <div class="score-input">
+                    <input type="range" class="score-slider" min="0" max="15" value="0" step="0.5" data-score="item2">
+                    <span class="score-value" id="score2">0</span>
+                    <span class="score-max">/15</span>
+                </div>
+            </div>
+            
+            <!-- 项目3 -->
+            <div class="score-item">
+                <div class="score-content">
+                    <div class="score-title">3. 常用制动规范缓解</div>
+                    <div class="score-desc">按照规范流程进行常用制动的缓解操作，动作标准、步骤正确</div>
+                </div>
+                <div class="score-input">
+                    <input type="range" class="score-slider" min="0" max="20" value="0" step="0.5" data-score="item3">
+                    <span class="score-value" id="score3">0</span>
+                    <span class="score-max">/20</span>
+                </div>
+            </div>
+            
+            <!-- 项目4 -->
+            <div class="score-item">
+                <div class="score-content">
+                    <div class="score-title">4. 紧急制动复位流程</div>
+                    <div class="score-desc">在紧急制动情况下，能够按照正确流程进行复位操作，确保行车安全</div>
+                </div>
+                <div class="score-input">
+                    <input type="range" class="score-slider" min="0" max="25" value="0" step="0.5" data-score="item4">
+                    <span class="score-value" id="score4">0</span>
+                    <span class="score-max">/25</span>
+                </div>
+            </div>
+            
+            <!-- 项目5 -->
+            <div class="score-item">
+                <div class="score-content">
+                    <div class="score-title">5. 安全操作规范</div>
+                    <div class="score-desc">严格遵守安全操作规范，无违规操作，确保实训过程安全</div>
+                </div>
+                <div class="score-input">
+                    <input type="range" class="score-slider" min="0" max="15" value="0" step="0.5" data-score="item5">
+                    <span class="score-value" id="score5">0</span>
+                    <span class="score-max">/15</span>
+                </div>
+            </div>
+            
+            <!-- 项目6 -->
+            <div class="score-item">
+                <div class="score-content">
+                    <div class="score-title">6. 故障处理能力</div>
+                    <div class="score-desc">能够快速识别并正确处理制动系统故障，采取有效的应急措施</div>
+                </div>
+                <div class="score-input">
+                    <input type="range" class="score-slider" min="0" max="15" value="0" step="0.5" data-score="item6">
+                    <span class="score-value" id="score6">0</span>
+                    <span class="score-max">/15</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 历史记录查看 -->
+        <div class="history-section">
+            <div class="section-title">历史评分记录</div>
+            <div class="history-controls">
+                <input type="text" class="history-search" id="historySearch" placeholder="搜索姓名或学号...">
+                <button class="btn btn-secondary" onclick="loadHistory()">刷新记录</button>
+            </div>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>姓名</th>
+                        <th>学号</th>
+                        <th>评价类型</th>
+                        <th>日期</th>
+                        <th>评分人</th>
+                        <th>总分</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTableBody">
+                    <!-- 历史记录将通过JavaScript动态生成 -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- 评语部分 -->
+        <div class="comments-section">
+            <div class="section-title">评语</div>
+            <textarea class="comments-textarea" id="comments" placeholder="请输入评语..."></textarea>
+        </div>
+        
+        <!-- 总分显示 -->
+        <div class="total-section">
+            <div class="total-content">
+                <div class="total-label">总分：</div>
+                <div class="total-score" id="totalScore">0</div>
+            </div>
+        </div>
+        
+        <!-- 操作按钮 -->
+        <div class="button-group">
+            <button class="btn btn-primary" onclick="saveScore()">保存评分</button>
+            <button class="btn btn-secondary" onclick="printScore()">打印评分表</button>
+            <button class="btn btn-danger" onclick="resetScore()">重置</button>
+        </div>
+    </div>
+    
+    <!-- 查看详情模态框 -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2 class="modal-title">评分详情</h2>
+            <div class="modal-info">
+                <div class="modal-info-item"><strong>姓名：</strong><span id="modalName"></span></div>
+                <div class="modal-info-item"><strong>学号：</strong><span id="modalId"></span></div>
+                <div class="modal-info-item"><strong>评价类型：</strong><span id="modalType"></span></div>
+                <div class="modal-info-item"><strong>日期：</strong><span id="modalDate"></span></div>
+                <div class="modal-info-item"><strong>评分人：</strong><span id="modalScorer"></span></div>
+                <div class="modal-info-item"><strong>总分：</strong><span id="modalTotal"></span></div>
+                <div class="modal-info-item"><strong>评语：</strong><span id="modalComments"></span></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 初始化日期为今天
+        document.getElementById('scoreDate').valueAsDate = new Date();
+        
+        // 监听滑块变化
+        const sliders = document.querySelectorAll('.score-slider');
+        sliders.forEach(slider => {
+            slider.addEventListener('input', function() {
+                const scoreId = 'score' + this.dataset.score.slice(-1);
+                document.getElementById(scoreId).textContent = this.value;
+                calculateTotal();
+            });
+        });
+        
+        // 监听搜索框变化
+        document.getElementById('historySearch').addEventListener('input', function() {
+            loadHistory();
+        });
+        
+        // 计算总分
+        function calculateTotal() {
+            let total = 0;
+            sliders.forEach(slider => {
+                total += parseFloat(slider.value);
+            });
+            document.getElementById('totalScore').textContent = total.toFixed(1);
+        }
+        
+        // 获取评价类型中文名称
+        function getScoreTypeText(type) {
+            const typeMap = {
+                'teacher': '教师评价',
+                'self': '自评',
+                'peer': '互评'
+            };
+            return typeMap[type] || type;
+        }
+        
+        // 保存评分
+        function saveScore() {
+            const studentName = document.getElementById('studentName').value;
+            const studentId = document.getElementById('studentId').value;
+            const scoreType = document.getElementById('scoreType').value;
+            const scoreDate = document.getElementById('scoreDate').value;
+            const scorerName = document.getElementById('scorerName').value;
+            const comments = document.getElementById('comments').value;
+            
+            if (!studentName || !studentId || !scoreDate || !scorerName) {
+                alert('请填写完整的学员信息和评分信息！');
+                return;
+            }
+            
+            const scoreData = {
+                id: Date.now().toString(),
+                studentName,
+                studentId,
+                scoreType,
+                scoreDate,
+                scorerName,
+                comments,
+                scores: {}
+            };
+            
+            sliders.forEach(slider => {
+                scoreData.scores[slider.dataset.score] = parseFloat(slider.value);
+            });
+            
+            scoreData.total = parseFloat(document.getElementById('totalScore').textContent);
+            
+            // 获取历史记录
+            const historyData = JSON.parse(localStorage.getItem('scoreHistory')) || [];
+            
+            // 添加新记录
+            historyData.push(scoreData);
+            
+            // 保存到localStorage
+            localStorage.setItem('scoreHistory', JSON.stringify(historyData));
+            
+            alert('评分保存成功！');
+            
+            // 刷新历史记录
+            loadHistory();
+        }
+        
+        // 加载历史记录
+        function loadHistory() {
+            const historyData = JSON.parse(localStorage.getItem('scoreHistory')) || [];
+            const searchTerm = document.getElementById('historySearch').value.toLowerCase();
+            const tableBody = document.getElementById('historyTableBody');
+            
+            // 过滤记录
+            const filteredData = historyData.filter(item => 
+                item.studentName.toLowerCase().includes(searchTerm) || 
+                item.studentId.toLowerCase().includes(searchTerm)
+            );
+            
+            // 清空表格
+            tableBody.innerHTML = '';
+            
+            // 添加记录
+            filteredData.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${item.studentName}</td>
+                    <td>${item.studentId}</td>
+                    <td>${getScoreTypeText(item.scoreType)}</td>
+                    <td>${item.scoreDate}</td>
+                    <td>${item.scorerName}</td>
+                    <td>${item.total}</td>
+                    <td><button class="btn-view" onclick="viewDetail('${item.id}')">查看详情</button></td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            if (filteredData.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="8" style="text-align: center; color: #999;">暂无记录</td>`;
+                tableBody.appendChild(row);
+            }
+        }
+        
+        // 查看详情
+        function viewDetail(id) {
+            const historyData = JSON.parse(localStorage.getItem('scoreHistory')) || [];
+            const item = historyData.find(item => item.id === id);
+            
+            if (item) {
+                document.getElementById('modalName').textContent = item.studentName;
+                document.getElementById('modalId').textContent = item.studentId;
+                document.getElementById('modalType').textContent = getScoreTypeText(item.scoreType);
+                document.getElementById('modalDate').textContent = item.scoreDate;
+                document.getElementById('modalScorer').textContent = item.scorerName;
+                document.getElementById('modalTotal').textContent = item.total;
+                document.getElementById('modalComments').textContent = item.comments || '无';
+                
+                // 显示模态框
+                document.getElementById('detailModal').style.display = 'block';
+            }
+        }
+        
+        // 打印评分表
+        function printScore() {
+            window.print();
+        }
+        
+        // 重置评分
+        function resetScore() {
+            if (confirm('确定要重置所有评分吗？')) {
+                sliders.forEach(slider => {
+                    slider.value = 0;
+                    const scoreId = 'score' + slider.dataset.score.slice(-1);
+                    document.getElementById(scoreId).textContent = '0';
+                });
+                
+                document.getElementById('studentName').value = '';
+                document.getElementById('studentId').value = '';
+                document.getElementById('scoreType').value = 'teacher';
+                document.getElementById('scoreDate').valueAsDate = new Date();
+                document.getElementById('scorerName').value = '';
+                document.getElementById('comments').value = '';
+                
+                calculateTotal();
+            }
+        }
+        
+        // 关闭模态框
+        document.querySelector('.modal-close').addEventListener('click', function() {
+            document.getElementById('detailModal').style.display = 'none';
+        });
+        
+        // 点击模态框外部关闭
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('detailModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+        
+        // 页面加载时初始化
+        window.addEventListener('load', function() {
+            loadHistory();
+        });
+    </script>
+</body>
+</html>
