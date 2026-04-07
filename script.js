@@ -1497,7 +1497,8 @@ function showEmojiAnimation(emoji) {
     const emojiElement = document.createElement('div');
     emojiElement.className = 'emoji-animation';
     emojiElement.textContent = emoji;
-    document.body.appendChild(emojiElement);
+    const container = document.querySelector('.container');
+    container.appendChild(emojiElement);
     
     // 动画结束后移除元素
     setTimeout(() => {
