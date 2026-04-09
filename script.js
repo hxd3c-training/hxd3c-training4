@@ -744,8 +744,9 @@ function openVideoPopup(videoPath) {
     popupDiv.innerHTML = popupHTML;
     popupDiv.id = 'videoPopup';
     
-    // 添加到页面
-    document.body.appendChild(popupDiv);
+    // 添加到容器中
+    const container = document.querySelector('.container');
+    container.appendChild(popupDiv);
     
     // 自动播放视频
     setTimeout(() => {
@@ -850,6 +851,9 @@ function showCrewAssessmentOutline() {
                         <button class="close-btn" onclick="hidePDFDocument()">关闭文档</button>
                     </div>
                     <div class="pdf-container" style="width: 100%; height: 800px; overflow: auto;">
+                        <div class="pdf-controls">
+                            <button onclick="window.open(document.getElementById('pdfEmbed').src, '_blank')" class="download-btn">查看PDF</button>
+                        </div>
                         <embed id="pdfEmbed" src="" type="application/pdf" width="100%" height="100%">
                     </div>
                 </div>
